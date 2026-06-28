@@ -1,0 +1,231 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ClientType {
+  PUBLIC
+  CONFIDENTIAL
+}
+
+enum KeyStatus {
+  ACTIVE
+  RETIRING
+  RETIRED
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String?    @unique
+  emailVerified Boolean    @default(false)
+  displayName   String?
+  picture       String?
+  status        UserStatus @default(ACTIVE)
+  role          UserRole   @default(USER)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  credentials   WebAuthnCredential[]
+  sessions      Session[]
+  consents      Consent[]
+  recoveryCodes RecoveryCode[]
+  refreshTokens RefreshToken[]
+  authRequests  AuthRequest[]
+}
+
+model WebAuthnCredential {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialId   String    @unique
+  publicKey      Bytes
+  signCount      Int       @default(0)
+  transports     String[]  @default([])
+  aaguid         String?
+  deviceType     String?
+  backupEligible Boolean   @default(false)
+  backupState    Boolean   @default(false)
+  nickname       String?
+  lastUsedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model OidcClient {
+  id                   String     @id @default(cuid())
+  clientId             String     @unique
+  clientSecretHash     String?
+  name                 String
+  type                 ClientType @default(CONFIDENTIAL)
+  redirectUris         String[]
+  postLogoutUris       String[]   @default([])
+  allowedScopes        String[]   @default(["openid", "profile", "email", "offline_access"])
+  tokenAuthMethod      String     @default("client_secret_basic")
+  accessTokenTtl       Int        @default(900)
+  refreshTokenTtl      Int        @default(2592000)
+  logoUrl              String?
+  brandColor           String?
+  backchannelLogoutUri String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  consents Consent[]
+}
+
+model AuthRequest {
+  id                  String   @id @default(cuid())
+  interactionId       String   @unique
+  clientId            String
+  redirectUri         String
+  scope               String
+  state               String?
+  nonce               String?
+  codeChallenge       String
+  codeChallengeMethod String   @default("S256")
+  responseType        String   @default("code")
+  prompt              String?
+  maxAge              Int?
+  loginHint           String?
+  userId              String?
+  user                User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  loginCompleted      Boolean  @default(false)
+  consentCompleted    Boolean  @default(false)
+  expiresAt           DateTime
+  createdAt           DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model AuthorizationCode {
+  id                  String    @id @default(cuid())
+  codeHash            String    @unique
+  clientId            String
+  userId              String
+  redirectUri         String
+  scope               String
+  nonce               String?
+  codeChallenge       String
+  codeChallengeMethod String    @default("S256")
+  authTime            DateTime
+  acr                 String?
+  amr                 String[]  @default([])
+  refreshFamilyId     String?
+  consumedAt          DateTime?
+  expiresAt           DateTime
+  createdAt           DateTime  @default(now())
+
+  @@index([clientId, userId])
+  @@index([expiresAt])
+}
+
+model RefreshToken {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId    String
+  scope       String
+  familyId    String
+  rotatedFrom String?
+  usedAt      DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([familyId])
+  @@index([userId, clientId])
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionHash String    @unique
+  userAgent   String?
+  ip          String?
+  amr         String[]  @default([])
+  createdAt   DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  absoluteExp DateTime
+  revokedAt   DateTime?
+
+  @@index([userId])
+}
+
+model Consent {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId  String
+  client    OidcClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  scopes    String[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([userId, clientId])
+}
+
+model SigningKey {
+  id                  String    @id @default(cuid())
+  kid                 String    @unique
+  alg                 String
+  publicJwk           Json
+  encryptedPrivateKey String
+  status              KeyStatus @default(ACTIVE)
+  createdAt           DateTime  @default(now())
+  retiredAt           DateTime?
+
+  @@index([status])
+}
+
+model RecoveryCode {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model WebAuthnChallenge {
+  id        String   @id @default(cuid())
+  challenge String   @unique
+  userId    String?
+  type      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  clientId  String?
+  event     String
+  ip        String?
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([userId])
+}
