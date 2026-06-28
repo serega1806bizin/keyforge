@@ -126,7 +126,7 @@ jobs:
           done
           echo "stack did not come up" && cat server.log web.log && exit 1
       - run: pnpm --filter @keyforge/web test:e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-results
