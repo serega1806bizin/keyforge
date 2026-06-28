@@ -3,6 +3,7 @@
 Self-hosted **OpenID Connect Identity Provider** with passwordless **passkey (WebAuthn/FIDO2)** sign-in.
 You don't wire up someone else's Auth0 — keyforge **is** the OIDC provider.
 
+[![Live demo](https://img.shields.io/badge/live%20demo-online-brightgreen)](https://keyforge-rp.onrender.com)
 [![CI](https://github.com/serega1806bizin/keyforge/actions/workflows/ci.yml/badge.svg)](https://github.com/serega1806bizin/keyforge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)
@@ -10,9 +11,10 @@ You don't wire up someone else's Auth0 — keyforge **is** the OIDC provider.
 ![OIDC](https://img.shields.io/badge/OIDC-code%20%2B%20PKCE-FF6F00)
 ![WebAuthn](https://img.shields.io/badge/auth-passkeys-6E40C9)
 
-**Live demo:** _add your Render URL here after deploy_ — open the demo app, click **Login with keyforge**,
-register a passkey, approve consent, and you're signed in. (Free tier: the first request may take
-~30–60s to wake the instances.)
+**Live demo:** **https://keyforge-rp.onrender.com** — open the demo app, click **Login with keyforge**,
+register a passkey, approve consent, and you're signed back into the app. The identity provider itself
+lives at [keyforge-idp.onrender.com/signup](https://keyforge-idp.onrender.com/signup).
+_(Free tier: the first request may take ~30–60s to wake the instances.)_
 
 A production-grade OAuth 2.1 / OpenID Connect authorization server, implemented end-to-end with
 **passkeys as the only first factor**: discovery, JWKS with key rotation, authorization-code + PKCE,
