@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  KEY_ENCRYPTION_KEY: ci-only-key-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  SESSION_SECRET: ci-only-secret-bbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  COOKIE_SECRET: ci-only-secret-cccccccccccccccccccccccccccc
+
+jobs:
+  quality:
+    name: typecheck · lint · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @keyforge/server db:generate
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm build
+
+  test:
+    name: unit · integration · conformance
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: keyforge
+          POSTGRES_PASSWORD: keyforge
+          POSTGRES_DB: keyforge
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U keyforge -d keyforge"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      DATABASE_URL: postgresql://keyforge:keyforge@localhost:5432/keyforge?schema=public
+      ISSUER_URL: http://localhost:3000
+      RP_ORIGIN: http://localhost:3000
+      RP_ID: localhost
+      PORT: "3000"
+      DEV_LOGIN_STUB: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @keyforge/server db:generate
+      - run: pnpm --filter @keyforge/server db:deploy
+      - run: pnpm --filter @keyforge/server db:seed
+      - name: Start IdP server
+        run: nohup pnpm --filter @keyforge/server start > server.log 2>&1 &
+      - name: Wait for readiness
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/readyz; then exit 0; fi
+            sleep 1
+          done
+          echo "server did not become ready" && cat server.log && exit 1
+      - run: pnpm --filter @keyforge/server test
+      - run: pnpm --filter @keyforge/sample-rp test
+
+  e2e:
+    name: playwright (virtual authenticator)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: keyforge
+          POSTGRES_PASSWORD: keyforge
+          POSTGRES_DB: keyforge
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U keyforge -d keyforge"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      DATABASE_URL: postgresql://keyforge:keyforge@localhost:5432/keyforge?schema=public
+      ISSUER_URL: http://localhost:5173
+      RP_ORIGIN: http://localhost:5173
+      RP_ID: localhost
+      PORT: "3000"
+      DEV_LOGIN_STUB: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @keyforge/server db:generate
+      - run: pnpm --filter @keyforge/server db:deploy
+      - run: pnpm --filter @keyforge/server db:seed
+      - run: pnpm --filter @keyforge/web exec playwright install --with-deps chromium
+      - name: Start IdP server
+        run: nohup pnpm --filter @keyforge/server start > server.log 2>&1 &
+      - name: Start Auth UI (Vite)
+        run: nohup pnpm --filter @keyforge/web dev > web.log 2>&1 &
+      - name: Wait for both
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/readyz && curl -sf http://localhost:5173; then exit 0; fi
+            sleep 1
+          done
+          echo "stack did not come up" && cat server.log web.log && exit 1
+      - run: pnpm --filter @keyforge/web test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: .playwright-results
+          retention-days: 7
