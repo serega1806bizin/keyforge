@@ -1,0 +1,39 @@
+{
+  "name": "keyforge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted OIDC Identity Provider with passwordless passkey (WebAuthn/FIDO2) login",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "pnpm --filter @keyforge/server dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @keyforge/web test:e2e",
+    "db:generate": "pnpm --filter @keyforge/server db:generate",
+    "db:migrate": "pnpm --filter @keyforge/server db:migrate",
+    "db:deploy": "pnpm --filter @keyforge/server db:deploy",
+    "db:seed": "pnpm --filter @keyforge/server db:seed",
+    "db:studio": "pnpm --filter @keyforge/server db:studio",
+    "certs": "bash scripts/gen-certs.sh",
+    "compose:up": "docker compose up -d",
+    "compose:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.21.0"
+  }
+}

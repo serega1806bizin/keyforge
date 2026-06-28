@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/build
+**/coverage
+**/.git
+**/*.log
+nginx/certs
+apps/server/src/generated
+.env
+.env.*
+!.env.example

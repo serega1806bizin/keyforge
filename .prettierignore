@@ -1,0 +1,13 @@
+**/dist
+**/build
+**/coverage
+**/node_modules
+apps/server/src/generated
+apps/server/prisma/migrations
+nginx/certs
+.playwright-results
+**/playwright-report
+**/test-results
+pnpm-lock.yaml
+*.md
+docs
