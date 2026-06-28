@@ -38,6 +38,14 @@ const EnvSchema = z.object({
   KEY_RETENTION_DAYS: z.coerce.number().int().positive().default(30),
 });
 
+const renderUrl = process.env["RENDER_EXTERNAL_URL"];
+const renderHost = process.env["RENDER_EXTERNAL_HOSTNAME"];
+if (renderUrl) {
+  process.env["ISSUER_URL"] ??= renderUrl;
+  process.env["RP_ORIGIN"] ??= renderUrl;
+}
+if (renderHost) process.env["RP_ID"] ??= renderHost;
+
 const parsed = EnvSchema.safeParse(process.env);
 if (!parsed.success) {
   console.error("Invalid environment configuration:");

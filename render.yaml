@@ -1,0 +1,56 @@
+databases:
+  - name: keyforge-db
+    plan: free
+
+services:
+  - type: web
+    name: keyforge-idp
+    runtime: docker
+    plan: free
+    dockerfilePath: ./apps/server/Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SERVE_WEB
+        value: "true"
+      - key: DEV_LOGIN_STUB
+        value: "false"
+      - key: RP_NAME
+        value: keyforge
+      - key: DATABASE_URL
+        fromDatabase:
+          name: keyforge-db
+          property: connectionString
+      - key: KEY_ENCRYPTION_KEY
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: SAMPLE_RP_URL
+        fromService:
+          type: web
+          name: keyforge-rp
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: web
+    name: keyforge-rp
+    runtime: docker
+    plan: free
+    dockerfilePath: ./apps/sample-rp/Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_ID
+        value: sample-rp
+      - key: CLIENT_NAME
+        value: Demo App
+      - key: ISSUER_URL
+        fromService:
+          type: web
+          name: keyforge-idp
+          envVarKey: RENDER_EXTERNAL_URL

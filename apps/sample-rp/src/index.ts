@@ -5,7 +5,11 @@ const ISSUER = new URL(process.env["ISSUER_URL"] ?? "http://localhost:3000");
 const CLIENT_ID = process.env["CLIENT_ID"] ?? "sample-rp";
 const CLIENT_NAME = process.env["CLIENT_NAME"] ?? "keyforge sample RP";
 const PORT = Number(process.env["PORT"] ?? 4000);
-const PUBLIC_URL = (process.env["PUBLIC_URL"] ?? `http://localhost:${PORT}`).replace(/\/$/, "");
+const PUBLIC_URL = (
+  process.env["PUBLIC_URL"] ??
+  process.env["RENDER_EXTERNAL_URL"] ??
+  `http://localhost:${PORT}`
+).replace(/\/$/, "");
 const REDIRECT_URI = `${PUBLIC_URL}/callback`;
 const SCOPE = "openid profile email offline_access";
 const insecure = ISSUER.protocol === "http:";
