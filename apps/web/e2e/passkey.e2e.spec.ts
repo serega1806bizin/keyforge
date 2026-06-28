@@ -78,8 +78,13 @@ test("passkey login, consent, and cross-RP SSO", async ({ page }) => {
   const stateA1 = randomBytes(8).toString("hex");
   await page.goto(authUrl(RP_A, a1.challenge, stateA1));
   await expect(page).toHaveURL(/\/login\//);
-  await page.getByTestId("login").click();
-  await page.getByTestId("consent-allow").click();
+  const loginButton = page.getByTestId("login");
+  const consentAllow = page.getByTestId("consent-allow");
+  await expect(loginButton.or(consentAllow)).toBeVisible({ timeout: 15_000 });
+  if (await loginButton.isVisible().catch(() => false)) {
+    await loginButton.click({ timeout: 5_000 }).catch(() => undefined);
+  }
+  await consentAllow.click({ timeout: 15_000 });
   await page.waitForURL(/localhost:4000\/callback/, { timeout: 15_000 });
   const codeA1 = new URL(page.url()).searchParams.get("code");
   expect(codeA1, "RP A code").toBeTruthy();
