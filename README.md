@@ -21,6 +21,15 @@ A production-grade OAuth 2.1 / OpenID Connect authorization server, implemented 
 refresh-token rotation with reuse detection, UserInfo, token revocation & introspection, dynamic client
 registration, RP-initiated logout, and cross-app single sign-on.
 
+## Screenshots
+
+| Sign-up — dark | Sign-up — light |
+| --- | --- |
+| ![keyforge sign-up, dark theme](docs/media/signup-dark.png) | ![keyforge sign-up, light theme](docs/media/signup-light.png) |
+
+The login, consent, and account-management screens share the same design system (React 19 + Tailwind v4,
+light/dark, tasteful motion, English/Ukrainian). Try them in the [live demo](https://keyforge-rp.onrender.com).
+
 ## Architecture
 
 ```mermaid
