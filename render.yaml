@@ -1,7 +1,3 @@
-databases:
-  - name: keyforge-db
-    plan: free
-
 services:
   - type: web
     name: keyforge-idp
@@ -20,9 +16,7 @@ services:
       - key: RP_NAME
         value: keyforge
       - key: DATABASE_URL
-        fromDatabase:
-          name: keyforge-db
-          property: connectionString
+        sync: false
       - key: KEY_ENCRYPTION_KEY
         generateValue: true
       - key: SESSION_SECRET
