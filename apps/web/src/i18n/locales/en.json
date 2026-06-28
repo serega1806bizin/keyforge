@@ -1,0 +1,130 @@
+{
+  "common": {
+    "footer": "Secured by passkeys · keyforge",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "cancel": "Cancel"
+  },
+  "lang": {
+    "label": "Language",
+    "en": "English",
+    "uk": "Українська"
+  },
+  "theme": {
+    "toLight": "Switch to light theme",
+    "toDark": "Switch to dark theme"
+  },
+  "signup": {
+    "title": "Create your account",
+    "subtitle": "One passkey. No passwords, ever.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Create your passkey",
+    "submitBusy": "Registering…",
+    "statusCreating": "Creating passkey…",
+    "statusRegistered": "Passkey registered — you can sign in now.",
+    "successFor": "Passkey registered for {{email}}.",
+    "continue": "Continue to your account",
+    "haveAccount": "Already have an account?"
+  },
+  "login": {
+    "eyebrow": "Sign in to continue",
+    "autofillLabel": "Pick a saved passkey",
+    "autofillPlaceholder": "Pick a saved passkey…",
+    "submit": "Continue with passkey",
+    "submitBusy": "Authenticating…",
+    "needAccount": "Need an account?",
+    "invalid": "This sign-in request is invalid or expired.",
+    "statusAuth": "Authenticating with your passkey…",
+    "statusGranting": "Granting access…",
+    "statusCancelling": "Cancelling…",
+    "statusSignedIn": "You are signed in.",
+    "consentFailed": "Could not complete the request. Please try again.",
+    "consentEyebrow": "Authorize access",
+    "consentWants": "wants access to your keyforge account.",
+    "thisApp": "this app",
+    "allow": "Allow access",
+    "deny": "Deny"
+  },
+  "account": {
+    "title": "Your account",
+    "anonHint": "Sign in with your passkey to manage it.",
+    "signIn": "Sign in with passkey",
+    "signInBusy": "Authenticating…",
+    "loadError": "Could not load your account. Please try again.",
+    "retry": "Retry",
+    "signedIn": "Signed in",
+    "admin": "Admin",
+    "signOut": "Sign out",
+    "passkeys": "Passkeys",
+    "synced": "Synced",
+    "deviceBound": "Device-bound",
+    "passkeyFallback": "passkey",
+    "delete": "Delete",
+    "deleteAria": "Delete passkey {{name}}",
+    "addPasskey": "Add a passkey",
+    "addPasskeyBusy": "Adding…",
+    "statusAdding": "Adding a passkey…",
+    "sessions": "Active sessions",
+    "thisDevice": "This device",
+    "current": "Current",
+    "revoke": "Revoke",
+    "revokeAria": "Revoke session {{name}}",
+    "recovery": "Recovery codes",
+    "recoveryHint": "One-time codes to sign in if you ever lose your passkeys.",
+    "generate": "Generate recovery codes",
+    "regenerate": "Regenerate recovery codes",
+    "generating": "Generating…",
+    "recoveryWarn": "Save these now. They will not be shown again.",
+    "copy": "Copy",
+    "copyAria": "Copy recovery codes",
+    "download": "Download",
+    "downloadAria": "Download recovery codes",
+    "regenTitle": "Regenerate recovery codes?",
+    "regenDesc": "Your existing recovery codes will stop working immediately.",
+    "regenConfirm": "Regenerate",
+    "loading": "Loading your account",
+    "unknownDevice": "Unknown device",
+    "deviceOn": "{{browser}} on {{os}}",
+    "toast": {
+      "added": "Passkey added",
+      "removed": "Passkey removed",
+      "revoked": "Session revoked",
+      "generated": "Recovery codes generated",
+      "copied": "Copied to clipboard",
+      "copyFail": "Could not copy. Select and copy the codes manually.",
+      "deleteFail": "Could not delete passkey.",
+      "revokeFail": "Could not revoke session.",
+      "generateFail": "Could not generate recovery codes."
+    }
+  },
+  "scopes": {
+    "openid": { "label": "Verify your identity", "desc": "Confirm who you are" },
+    "profile": { "label": "Your profile", "desc": "Your name and avatar" },
+    "email": { "label": "Your email address", "desc": "See your email address" },
+    "offline_access": { "label": "Stay signed in", "desc": "Keep you signed in between visits" },
+    "fallbackDesc": "Access to {{scope}}"
+  },
+  "errors": {
+    "cancelled": "Passkey prompt was cancelled or timed out.",
+    "exists": "A passkey for this device already exists.",
+    "notFound": "No matching passkey found on this device.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "That link does not lead anywhere here.",
+    "cta": "Go to sign up"
+  },
+  "boundary": {
+    "title": "Something went wrong",
+    "subtitle": "The page hit an unexpected error. Reloading usually fixes it.",
+    "reload": "Reload"
+  },
+  "titles": {
+    "login": "Sign in · keyforge",
+    "signup": "Create account · keyforge",
+    "account": "Your account · keyforge",
+    "notFound": "Not found · keyforge"
+  }
+}
