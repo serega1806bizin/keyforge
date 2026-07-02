@@ -123,15 +123,6 @@ pnpm --filter @keyforge/sample-rp dev    # http://localhost:4000 → "Login with
 
 `pnpm test` runs the unit/integration + conformance suites; `pnpm test:e2e` runs the Playwright flow.
 
-## Deploy (free)
-
-A [`render.yaml`](render.yaml) blueprint deploys the whole stack on Render's free tier: in the Render
-dashboard choose **New → Blueprint**, connect this repository, and apply. It provisions PostgreSQL, builds
-both Docker services, generates the signing/session secrets, and cross-wires the public URLs automatically.
-
-For a long-lived demo, point `DATABASE_URL` at a persistent free Postgres (e.g. Neon). The same Dockerfiles
-run unchanged on any container host (Railway, Fly, a VPS with the included `docker-compose.yml` + nginx).
-
 ## License
 
 [MIT](LICENSE)
